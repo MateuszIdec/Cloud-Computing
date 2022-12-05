@@ -1,9 +1,14 @@
+import numpy
 from bs4 import *
 import requests
 import os
 from newspaper import Article
 from htmldate import find_date
+import cv2
+import numpy as np
 
+
+# import cv2.cv2 as cv2
 
 def folder_create(images):
     try:
@@ -114,9 +119,28 @@ def download_article(url):
     article.parse()
 
 
-url = input("Enter URL:- ")
+# noinspection PyUnresolvedReferences
+def recognize_date_on_image(image1, image2):
+    img1 = cv2.imread(image1, 0)
+    img2 = cv2.imread(image2, 0)
 
-download_article(url)
+    # --- take the absolute difference of the images ---
+    res = cv2.absdiff(img1, img2)
 
-#check date of the article
-print(find_date(url))
+    # --- convert the result to integer type ---
+    res = res.astype(np.uint8)
+
+    # --- find percentage difference based on number of pixels that are not zero ---
+    percentage = (numpy.count_nonzero(res) * 100) / res.size
+    print(percentage)
+
+
+# url = input("Enter URL:- ")
+#
+# download_article(url)
+
+# check date of the article
+# print(find_date(url))
+
+# Checking similarity of images
+recognize_date_on_image("tank.png", "tank1.png")
