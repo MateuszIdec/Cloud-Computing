@@ -120,9 +120,14 @@ def download_article(url):
 
 
 # noinspection PyUnresolvedReferences
-def recognize_date_on_image(image1, image2):
+def compare_similarity(image1, image2):
     img1 = cv2.imread(image1, 0)
     img2 = cv2.imread(image2, 0)
+
+    if img1.shape[0] * img1.shape[1] < img2.shape[0] * img2.shape[1]:
+        img2 = cv2.resize(img2, (img1.shape[1], img1.shape[0]))
+    else:
+        img1 = cv2.resize(img1, (img2.shape[1], img2.shape[0]))
 
     # --- take the absolute difference of the images ---
     res = cv2.absdiff(img1, img2)
@@ -143,4 +148,4 @@ def recognize_date_on_image(image1, image2):
 # print(find_date(url))
 
 # Checking similarity of images
-recognize_date_on_image("tank.png", "tank1.png")
+compare_similarity("tank.png", "dice.png")
