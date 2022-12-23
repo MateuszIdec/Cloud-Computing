@@ -4,99 +4,126 @@ import tensorflow as tf
 from tensorflow import keras
 from sklearn.model_selection import train_test_split
 from tensorflow.keras.preprocessing.image import ImageDataGenerator
+import requests
+from bs4 import BeautifulSoup
 
-# Load the dataset
-original_path = "data/original"
-modified_path = "data/modified"
-
-original_images = []
-modified_images = []
-
-# Iterate through the original images and load them into a list
-for image_name in os.listdir(original_path):
-  # Load the image
-  image = keras.preprocessing.image.load_img(os.path.join(original_path, image_name))
-  image = keras.preprocessing.image.img_to_array(image)
-
-  # Resize the image using the `tf.image.resize` function
-  image = tf.image.resize(image, [150, 150])
-
-  original_images.append(image)
-
-# Iterate through the modified images and load them into a list
-for image_name in os.listdir(modified_path):
-  # Load the image
-  image = keras.preprocessing.image.load_img(os.path.join(modified_path, image_name))
-  image = keras.preprocessing.image.img_to_array(image)
-
-  # Resize the image using the `tf.image.resize` function
-  image = tf.image.resize(image, [150, 150])
-
-  modified_images.append(image)
-
-# Create labels for the original and modified images
-original_labels = np.zeros(len(original_images))
-modified_labels = np.ones(len(modified_images))
-
-# Combine the original and modified images and labels
-images = np.concatenate([original_images, modified_images])
-labels = np.concatenate([original_labels, modified_labels])
-
-# Split the data into training and testing sets
-x_train, x_test, y_train, y_test = train_test_split(images, labels, test_size=0.2)
-
-# Normalize the pixel values between 0 and 1
-x_train = x_train / 255.0
-x_test = x_test / 255.0
-
-# Create an ImageDataGenerator object to augment the training data
-train_datagen = ImageDataGenerator(
-    rotation_range=30,
-    width_shift_range=0.2,
-    height_shift_range=0.2,
-    shear_range=0.2,
-    zoom_range=0.2,
-    horizontal_flip=True,
-    fill_mode='nearest'
-)
-
-# Use the ImageDataGenerator object to generate augmented training examples
-x_train = train_datagen.flow(x_train, y_train, batch_size=32)
-# Define the model
-model = keras.Sequential([
-    keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(150, 150, 3)),
-    keras.layers.MaxPooling2D(2, 2),
-    keras.layers.Conv2D(64, (3, 3), activation='relu'),
-    keras.layers.MaxPooling2D(2, 2),
-    keras.layers.Conv2D(128, (3, 3), activation='relu'),
-    keras.layers.MaxPooling2D(2, 2),
-    keras.layers.Conv2D(128, (3, 3), activation='relu'),
-    keras.layers.MaxPooling2D(2, 2),
-    keras.layers.Flatten(),
-    keras.layers.Dense(512, activation='relu'),
-    keras.layers.Dense(1, activation='sigmoid')
-])
-
-# Compile the model
-model.compile(loss='binary_crossentropy',
-              optimizer=keras.optimizers.RMSprop(lr=1e-4),
-              metrics=['accuracy'])
-
-#num_batches = len(x_train) // 32
-# Train the model
-model.fit_generator(x_train, steps_per_epoch=50, epochs=100)
-
-# Evaluate the model on the test data
-test_loss, test_acc = model.evaluate(x_test, y_test)
-
-print('Test accuracy:', test_acc)
-
-
-# Save the model
-model.save('model.h5')
+# # Load the dataset
+# original_path = "data/original"
+# modified_path = "data/modified"
+#
+# original_images = []
+# modified_images = []
+#
+# # Iterate through the original images and load them into a list
+# for image_name in os.listdir(original_path):
+#   # Load the image
+#   image = keras.preprocessing.image.load_img(os.path.join(original_path, image_name))
+#   image = keras.preprocessing.image.img_to_array(image)
+#
+#   # Resize the image using the `tf.image.resize` function
+#   image = tf.image.resize(image, [150, 150])
+#
+#   original_images.append(image)
+#
+# # Iterate through the modified images and load them into a list
+# for image_name in os.listdir(modified_path):
+#   # Load the image
+#   image = keras.preprocessing.image.load_img(os.path.join(modified_path, image_name))
+#   image = keras.preprocessing.image.img_to_array(image)
+#
+#   # Resize the image using the `tf.image.resize` function
+#   image = tf.image.resize(image, [150, 150])
+#
+#   modified_images.append(image)
+#
+# # Create labels for the original and modified images
+# original_labels = np.zeros(len(original_images))
+# modified_labels = np.ones(len(modified_images))
+#
+# # Combine the original and modified images and labels
+# images = np.concatenate([original_images, modified_images])
+# labels = np.concatenate([original_labels, modified_labels])
+#
+# # Split the data into training and testing sets
+# x_train, x_test, y_train, y_test = train_test_split(images, labels, test_size=0.2)
+#
+# # Normalize the pixel values between 0 and 1
+# x_train = x_train / 255.0
+# x_test = x_test / 255.0
+#
+# # Create an ImageDataGenerator object to augment the training data
+# train_datagen = ImageDataGenerator(
+#     rotation_range=30,
+#     width_shift_range=0.2,
+#     height_shift_range=0.2,
+#     shear_range=0.2,
+#     zoom_range=0.2,
+#     horizontal_flip=True,
+#     fill_mode='nearest'
+# )
+#
+# # Use the ImageDataGenerator object to generate augmented training examples
+# x_train = train_datagen.flow(x_train, y_train, batch_size=32)
+# # Define the model
+# model = keras.Sequential([
+#     keras.layers.Conv2D(32, (3, 3), activation='relu', input_shape=(150, 150, 3)),
+#     keras.layers.MaxPooling2D(2, 2),
+#     keras.layers.Conv2D(64, (3, 3), activation='relu'),
+#     keras.layers.MaxPooling2D(2, 2),
+#     keras.layers.Conv2D(128, (3, 3), activation='relu'),
+#     keras.layers.MaxPooling2D(2, 2),
+#     keras.layers.Conv2D(128, (3, 3), activation='relu'),
+#     keras.layers.MaxPooling2D(2, 2),
+#     keras.layers.Flatten(),
+#     keras.layers.Dense(512, activation='relu'),
+#     keras.layers.Dense(1, activation='sigmoid')
+# ])
+#
+# # Compile the model
+# model.compile(loss='binary_crossentropy',
+#               optimizer=keras.optimizers.RMSprop(lr=1e-4),
+#               metrics=['accuracy'])
+#
+# #num_batches = len(x_train) // 32
+# # Train the model
+# model.fit_generator(x_train, steps_per_epoch=50, epochs=100)
+#
+# # Evaluate the model on the test data
+# test_loss, test_acc = model.evaluate(x_test, y_test)
+#
+# print('Test accuracy:', test_acc)
+#
+#
+# # Save the model
+# model.save('model.h5')
 
 # Load the saved model
 loaded_model = keras.models.load_model('model.h5')
+
+###########################
+
+
+def download_photo(url):
+  # Send a GET request to the URL
+  response = requests.get(url)
+
+  # Parse the HTML content of the page
+  soup = BeautifulSoup(response.text, 'html.parser')
+
+  # Find the URL of the photo
+  photo_element = soup.find('meta', property='og:image')
+  if photo_element:
+    photo_url = photo_element['content']
+
+    # Download the photo and save it to a file
+    response = requests.get(photo_url)
+    open('photo.jpg', 'wb').write(response.content)
+  else:
+    print('Photo URL not found')
+
+# Test the function with an Instagram URL
+download_photo('https://www.instagram.com/p/CkoYf3eDB2U/')
+######################################
 
 # Define the paths to the two images you want to classify
 image_path_1 = "data/modified/flickr_0500.png"
