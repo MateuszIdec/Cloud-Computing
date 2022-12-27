@@ -1,8 +1,8 @@
 from django.shortcuts import render
 from django.http import HttpResponse
-from django.http import HttpResponseRedirect
 from .forms import UrlForm
 from . import imageOperations
+from django.template import loader
 
 
 def say_hello(request):
@@ -22,7 +22,12 @@ def result(request):
             except ValueError as e:
                 return render(request, 'errorPage.html')
 
-            percentageValue = imageOperations.prediciton()
-            return render(request, 'resultPage.html')
+    percentageValue = round(imageOperations.prediciton() * 100,2)
 
-    return HttpResponse("Wrong url")
+    context = {
+        'result': percentageValue,
+    }
+    template = loader.get_template('resultPage.html')
+    return HttpResponse(template.render(context, request))
+
+
