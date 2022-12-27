@@ -1,0 +1,28 @@
+ /* Style the progress bar container */
+  .progress {
+    width: 0%;
+    background-color: #ddd;
+    height: 20px;
+    border-radius: 20px;
+    margin: 2% auto; /* Center the progress bar horizontally */
+  }
+
+  /* Style the progress bar */
+  .progress-bar {
+    height: 100%;
+    background-color: #4caf50;
+    border-radius: 20px;
+  }
+
+  /* Style the text */
+  .progress-text {
+    text-align: center;
+    font-size: 16px;
+    color: #333;
+  }
+  body {
+  background-color: black;
+  }
+  .test{
+  size: 20px;
+  }
