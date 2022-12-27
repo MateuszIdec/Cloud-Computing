@@ -10,15 +10,19 @@ def say_hello(request):
 
 
 def result(request):
-    if request.method == 'GET':
-        print("GET method")
-        form = UrlForm(request.GET)
-        print(request.GET)
+    if request.method == 'POST':
+        form = UrlForm(request.POST)
+        print(request.POST)
         if form.is_valid():
             print("Form is valid")
             url = form.cleaned_data['url']
-            imageOperations.download_photo(url)
+
+            try:
+                imageOperations.download_photo(url)
+            except ValueError as e:
+                return render(request, 'errorPage.html')
+
             percentageValue = imageOperations.prediciton()
-            return HttpResponse(percentageValue)
+            return render(request, 'resultPage.html')
 
     return HttpResponse("Wrong url")
