@@ -3,7 +3,7 @@
   }
  /* Style the progress bar container */
   .progress {
-    width: 0%;
+    width: 50%;
     background-color: #ddd;
     height: 20px;
     border-radius: 20px;

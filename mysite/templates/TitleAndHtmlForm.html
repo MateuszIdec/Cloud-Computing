@@ -1,0 +1,9 @@
+<h3 style="text-align: center;"><strong>Check if Instagram picture is fake:</strong></h3>
+<div>
+<form style="text-align: center;" action="/result/" method="post">
+    {% csrf_token %}
+    <label for="url">Enter URL: </label>
+    <input id="url" type="text" name="url" value="{{ current_name }}">
+    <input type="submit" value="OK">
+</form>
+</div>
