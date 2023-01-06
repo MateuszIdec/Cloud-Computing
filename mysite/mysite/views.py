@@ -12,9 +12,7 @@ def say_hello(request):
 def result(request):
     if request.method == 'POST':
         form = UrlForm(request.POST)
-        print(request.POST)
         if form.is_valid():
-            print("Form is valid")
             url = form.cleaned_data['url']
 
             try:
